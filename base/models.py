@@ -4,17 +4,28 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 # Create your models here.
 
 class User(AbstractUser):
+    ROLE_CHOICES = (
+        ('customer', 'Customer'),
+        ('worker', 'Worker'),
+    )
+       
     location = models.CharField(max_length=255)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     
     groups = models.ManyToManyField(Group, related_name="custom_user_set", blank=True)
     user_permissions = models.ManyToManyField(Permission, related_name="custom_user_permissions_set", blank=True)
+    
+    def is_worker(self):
+        return self.role == "worker"
 
-class Customer(User):
-    customer_id = models.AutoField(primary_key=True)
+    def is_customer(self):
+        return self.role == "customer"
 
-class Worker(User):
-    worker_id = models.AutoField(primary_key=True)
+class Customer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer_profile")
+
+class Worker(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="worker_profile")
     skills = models.TextField()
     earnings = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     status = models.CharField(max_length=50, choices=[('available', 'Available'), ('busy', 'Busy')])

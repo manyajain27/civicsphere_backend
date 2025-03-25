@@ -4,7 +4,20 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'location', 'profile_pic']
+        fields = ['Name', 'email', 'location', 'profile_pic']
+        
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+
+        # Automatically create a Worker or Customer profile
+        if user.role == 'worker':
+            Worker.objects.create(user=user)
+        else:
+            Customer.objects.create(user=user)
+
+        return user
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
