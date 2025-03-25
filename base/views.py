@@ -70,3 +70,4 @@ class WorkerReviewCreateView(generics.CreateAPIView):
 #     queryset = Chat.objects.all()
 #     serializer_class = ChatSerializer
 #     permission_classes = [permissions.IsAuthenticated]
+
