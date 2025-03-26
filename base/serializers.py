@@ -38,6 +38,9 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = '__all__'
+        extra_kwargs = {
+            'customer': {'required': False}
+        }
 
 class ChatSerializer(serializers.ModelSerializer):
     class Meta:
