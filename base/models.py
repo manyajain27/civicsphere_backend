@@ -42,10 +42,12 @@ class User(AbstractUser):
         ('customer', 'Customer'),
         ('worker', 'Worker'),
     )
-       
+    
+    username=None  
     email = models.EmailField(unique=True)
     location = models.CharField(max_length=255)
     profile_pic = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

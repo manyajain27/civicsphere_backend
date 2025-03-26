@@ -9,8 +9,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['Name', 'email', 'location', 'profile_pic']
-        
+        fields = ['id', 'email', 'password', 'role']  # Explicitly defining fields
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -23,6 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
             Customer.objects.create(user=user)
 
         return user
+
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
