@@ -7,6 +7,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .models import *
 from .serializers import *
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -59,10 +61,34 @@ class JobCreateView(generics.CreateAPIView):
         serializer.save(customer=customer)
 
 # Fetch Jobs
+# class JobListView(generics.ListAPIView):
+#     serializer_class = JobSerializer
+#     permission_classes = [permissions.AllowAny]
+
+#     def get_queryset(self):
+#         queryset = Job.objects.all()
+#         category = self.request.query_params.get('category', None)
+        
+#         if category:
+#             queryset = queryset.filter(category__iexact=category)  # Case-insensitive match
+        
+#         return queryset
+
 class JobListView(generics.ListAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        categories = self.request.query_params.getlist('category')  # Get multiple categories
+        
+        if categories:
+            queryset = queryset.filter(category__in=categories)  # Filter by multiple categories
+            
+        return queryset
 
 # Update Job
 class JobUpdateView(generics.UpdateAPIView):
@@ -70,7 +96,7 @@ class JobUpdateView(generics.UpdateAPIView):
     serializer_class = JobSerializer
     permission_classes = [permissions.IsAuthenticated, IsCustomer]
 
-# Worker Profiles
+# Workers List
 class WorkerListView(generics.ListAPIView):
     queryset = Worker.objects.all()
     serializer_class = WorkerSerializer
@@ -86,6 +112,26 @@ class WorkerReviewCreateView(generics.CreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated, IsCustomer]
+
+#User can see their own profile
+class UserProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user  # Get the authenticated user
+        user_data = UserSerializer(user).data  # Serialize user data
+
+        # Check if the user is a customer or a worker and fetch additional details
+        if user.role == 'customer':
+            customer_profile = getattr(user, 'customer_profile', None)
+            user_data['profile'] = CustomerSerializer(customer_profile).data if customer_profile else None
+        elif user.role == 'worker':
+            worker_profile = getattr(user, 'worker_profile', None)
+            user_data['profile'] = WorkerSerializer(worker_profile).data if worker_profile else None
+        
+        return Response(user_data)
+
 
 # Secure Messaging
 # class ChatCreateView(generics.CreateAPIView):

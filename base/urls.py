@@ -14,10 +14,14 @@ urlpatterns = [
     path('jobs/create/', JobCreateView.as_view(), name='job-create'),  # Only Customers
     path('jobs/update/<int:pk>/', JobUpdateView.as_view(), name='job-update'),  # Only Customers
 
-    # Worker APIs (Only Customers can see Workers)
+    # Worker List APIs (Only Customers can see Workers)
     path('workers/', WorkerListView.as_view(), name='worker-list'),
 
     # Reviews & Ratings
     path('reviews/customer/', CustomerReviewCreateView.as_view(), name='customer-review'),  # Only Workers can review Customers
     path('reviews/worker/', WorkerReviewCreateView.as_view(), name='worker-review'),  # Only Customers can review Workers
+
+    #User Profile
+    path('user/profile/', UserProfileView.as_view(), name='user-profile'),
+
 ]
