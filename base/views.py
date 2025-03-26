@@ -73,7 +73,7 @@ class JobCreateView(generics.CreateAPIView):
 #             queryset = queryset.filter(category__iexact=category)  # Case-insensitive match
         
 #         return queryset
-
+# Get list of all jobs with categorical search
 class JobListView(generics.ListAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
@@ -94,7 +94,13 @@ class JobListView(generics.ListAPIView):
 class JobUpdateView(generics.UpdateAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
-    permission_classes = [permissions.IsAuthenticated, IsCustomer]
+    permission_classes = [permissions.IsAuthenticated, IsJobOwner]
+
+#Delete Job
+class JobDeleteView(generics.DestroyAPIView):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
+    permission_classes = [permissions.IsAuthenticated, IsJobOwner]
 
 # Workers List
 class WorkerListView(generics.ListAPIView):

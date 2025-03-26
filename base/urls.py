@@ -12,7 +12,8 @@ urlpatterns = [
     # Job APIs (Restricted to Workers or Customers)
     path('jobs/', JobListView.as_view(), name='job-list'),  # Open for all (Modify if needed)
     path('jobs/create/', JobCreateView.as_view(), name='job-create'),  # Only Customers
-    path('jobs/update/<int:pk>/', JobUpdateView.as_view(), name='job-update'),  # Only Customers
+    path('jobs/<int:pk>/update/', JobUpdateView.as_view(), name='job-update'),  # Only Customers
+    path('jobs/<int:pk>/delete/', JobDeleteView.as_view(), name='job-delete'),  #Only Customers
 
     # Worker List APIs (Only Customers can see Workers)
     path('workers/', WorkerListView.as_view(), name='worker-list'),
