@@ -14,6 +14,8 @@ urlpatterns = [
     path('jobs/create/', JobCreateView.as_view(), name='job-create'),  # Only Customers
     path('jobs/<int:pk>/update/', JobUpdateView.as_view(), name='job-update'),  # Only Customers
     path('jobs/<int:pk>/delete/', JobDeleteView.as_view(), name='job-delete'),  #Only Customers
+    path('jobs/<int:pk>/accept/', AcceptJobView.as_view(), name='job-accept'),  #Assigning Job to worker (Only Workers)
+    path('jobs/assigned/', WorkerAssignedJobsView.as_view(), name='worker-jobs'), #Workers Viewing their job list (Only Workers)
 
     # Worker List APIs (Only Customers can see Workers)
     path('workers/', WorkerListView.as_view(), name='worker-list'),

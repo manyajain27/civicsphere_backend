@@ -78,12 +78,12 @@ class Worker(models.Model):
 class Job(models.Model):
     job_id = models.AutoField(primary_key=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='jobs')
-    #worker = models.ForeignKey(Worker, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_jobs')
+    worker = models.ForeignKey(Worker, on_delete=models.SET_NULL, null=True, blank=True, related_name='assigned_jobs')
     title = models.CharField(max_length=255)
     description = models.TextField()
     category = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    #status = models.CharField(max_length=50, choices=[('open', 'Open'), ('assigned', 'Assigned'), ('completed', 'Completed')], default='open')
+    status = models.CharField(max_length=50, choices=[('open', 'Open'), ('assigned', 'Assigned'), ('completed', 'Completed')], default='open')
     image = models.ImageField(upload_to='job_images/', blank=True, null=True)
 
 class Chat(models.Model):
