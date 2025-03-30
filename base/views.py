@@ -9,6 +9,38 @@ from django.contrib.auth import authenticate
 from .models import *
 from .serializers import *
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+class LoginView(generics.GenericAPIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description='User email'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='User password'),
+            },
+            required=['email', 'password'],
+        ),
+        responses={
+            200: openapi.Response(description="Login successful", schema=UserSerializer),
+            400: "Invalid credentials",
+        },
+    )
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        user = authenticate(request, username=email, password=password)
+        if user:
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'user': UserSerializer(user).data,
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+            })
+
+        return Response({'error': 'Invalid credentials'}, status=400)
 
 
 class RegisterView(generics.CreateAPIView):

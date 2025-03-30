@@ -1,9 +1,30 @@
-from django.urls import path
+from django.urls import re_path, path
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import *
 from .serializers import *
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="CivicSphere API",
+        default_version="v1",
+        description="API documentation for CivicSphere",
+        terms_of_service="https://www.yourwebsite.com/terms/",
+        contact=openapi.Contact(email="support@yourwebsite.com"),
+        license=openapi.License(name="MIT License"),
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
+)
 
 urlpatterns = [
+    
+    # Swagger Documentation
+    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="swagger-ui"),
+    path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="redoc-ui"),
+    re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
+
     # Authentication APIs
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
