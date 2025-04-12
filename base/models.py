@@ -68,12 +68,16 @@ class User(AbstractUser):
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer_profile")
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
 
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="worker_profile")
     skills = models.TextField()
     earnings = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     status = models.CharField(max_length=50, choices=[('available', 'Available'), ('busy', 'Busy')])
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name
 
 class Job(models.Model):
     job_id = models.AutoField(primary_key=True)

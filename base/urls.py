@@ -26,9 +26,11 @@ urlpatterns = [
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
 
     # Authentication APIs
-    path('auth/register/', RegisterView.as_view(), name='register'),
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+    # Authentication APIs
+    path('auth/register/', RegisterView.as_view(), name='register'),  # Returns user + tokens
+    path('auth/login/', LoginView.as_view(), name='login'),  # Custom login view with tokens
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Default refresh
+
 
     # Job APIs (Restricted to Workers or Customers)
     path('jobs/', JobListView.as_view(), name='job-list'),  # Open for all (Modify if needed)

@@ -12,18 +12,33 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(UserSerializer(user).data, status=201)
+
+
 class LoginView(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+
     @swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'email': openapi.Schema(type=openapi.TYPE_STRING, description='User email'),
-                'password': openapi.Schema(type=openapi.TYPE_STRING, description='User password'),
+                'email': openapi.Schema(type=openapi.TYPE_STRING),
+                'password': openapi.Schema(type=openapi.TYPE_STRING),
             },
             required=['email', 'password'],
         ),
         responses={
-            200: openapi.Response(description="Login successful", schema=UserSerializer),
+            200: openapi.Response(description="Login successful"),
             400: "Invalid credentials",
         },
     )
@@ -32,54 +47,18 @@ class LoginView(generics.GenericAPIView):
         password = request.data.get('password')
 
         user = authenticate(request, username=email, password=password)
+
         if user:
             refresh = RefreshToken.for_user(user)
             return Response({
-                'user': UserSerializer(user).data,
+                'access': str(refresh.access_token),
                 'refresh': str(refresh),
-                'access': str(refresh.access_token)
+                'user_type': user.role,
+                'user': UserSerializer(user).data,
             })
 
         return Response({'error': 'Invalid credentials'}, status=400)
 
-
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def create(self, request, *args, **kwargs):
-        # Use the default create method from the serializer
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-
-        # Generate tokens for the newly created user
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'user': UserSerializer(user).data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token)
-        }, status=201)
-
-class LoginView(generics.GenericAPIView):
-    def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        
-        # Authenticate the user
-        user = authenticate(request, username=email, password=password)
-        
-        if user:
-            # Generate tokens
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'user': UserSerializer(user).data,
-                'refresh': str(refresh),
-                'access': str(refresh.access_token)
-            })
-        
-        return Response({'error': 'Invalid credentials'}, status=400)
 
 # Job Posting
 class JobCreateView(generics.CreateAPIView):
