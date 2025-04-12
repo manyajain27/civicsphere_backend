@@ -136,14 +136,6 @@ class AcceptJobView(generics.UpdateAPIView):
                             status=status.HTTP_400_BAD_REQUEST)
         
         worker = request.user.worker_profile
-        # Ensure the authenticated user is a worker
-        # try:
-        #     worker = request.user.worker_profile
-        # except Worker.DoesNotExist:
-        #     return Response({'detail': 'Only workers can accept jobs.'},
-        #                     status=status.HTTP_403_FORBIDDEN)
-
-        # Update the job status and assign the worker
         job.status = 'assigned'
         job.assigned_worker = worker
         job.save()

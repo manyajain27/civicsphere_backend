@@ -29,7 +29,7 @@ urlpatterns = [
     # Authentication APIs
     path('auth/register/', RegisterView.as_view(), name='register'),  # Returns user + tokens
     path('auth/login/', LoginView.as_view(), name='login'),  # Custom login view with tokens
-    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Default refresh
+    path('auth/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),  # Default refresh
 
 
     # Job APIs (Restricted to Workers or Customers)

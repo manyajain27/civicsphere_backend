@@ -4,6 +4,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 
 class CustomUserManager(BaseUserManager):
     def email_validator(self, email):
@@ -89,6 +90,12 @@ class Job(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, choices=[('open', 'Open'), ('assigned', 'Assigned'), ('completed', 'Completed')], default='open')
     image = models.ImageField(upload_to='job_images/', blank=True, null=True)
+    time_preference = models.CharField(max_length=20, choices=[('Now', 'Now'), ('Later', 'Later')], default='Now')
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return self.title
+
 
 class Chat(models.Model):
     chat_id = models.AutoField(primary_key=True)

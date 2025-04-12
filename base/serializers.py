@@ -55,12 +55,16 @@ class WorkerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class JobSerializer(serializers.ModelSerializer):
+    customer_name = serializers.SerializerMethodField()
     class Meta:
         model = Job
         fields = '__all__'
         extra_kwargs = {
-            'customer': {'required': False}
+            'customer': {'required': False},
+            'created_at': {'read_only': True},
         }
+    def get_customer_name(self, obj):
+        return f"{obj.customer.user.first_name} {obj.customer.user.last_name}"
 
 class ChatSerializer(serializers.ModelSerializer):
     class Meta:
