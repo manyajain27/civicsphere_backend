@@ -33,12 +33,16 @@ urlpatterns = [
 
 
     # Job APIs (Restricted to Workers or Customers)
-    path('jobs/', JobListView.as_view(), name='job-list'),  # Open for all (Modify if needed)
-    path('jobs/create/', JobCreateView.as_view(), name='job-create'),  # Only Customers
-    path('jobs/<int:pk>/update/', JobUpdateView.as_view(), name='job-update'),  # Only Customers
-    path('jobs/<int:pk>/delete/', JobDeleteView.as_view(), name='job-delete'),  #Only Customers
-    path('jobs/<int:pk>/accept/', AcceptJobView.as_view(), name='job-accept'),  #Assigning Job to worker (Only Workers)
-    path('jobs/assigned/', WorkerAssignedJobsView.as_view(), name='worker-jobs'), #Workers Viewing their job list (Only Workers)
+    path('jobs/', CustomerJobListView.as_view(), name='customer-job-list'), 
+    path('jobs/open/', JobListView.as_view(), name='job-list'), 
+    path('jobs/create/', JobCreateView.as_view(), name='job-create'), 
+    path('jobs/<int:pk>/update/', JobUpdateView.as_view(), name='job-update'), 
+    path('jobs/<int:pk>/delete/', JobDeleteView.as_view(), name='job-delete'), 
+    path('jobs/<int:pk>/accept/', AcceptJobView.as_view(), name='job-accept'), 
+    path('jobs/assigned/', WorkerAssignedJobsView.as_view(), name='worker-jobs'), 
+    path('jobs/<int:pk>/offers/', JobOfferView.as_view(), name='job-offer'),
+
+
 
     # Worker List APIs (Only Customers can see Workers)
     path('workers/', WorkerListView.as_view(), name='worker-list'),

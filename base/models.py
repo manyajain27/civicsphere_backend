@@ -77,6 +77,8 @@ class Worker(models.Model):
     skills = models.TextField()
     earnings = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     status = models.CharField(max_length=50, choices=[('available', 'Available'), ('busy', 'Busy')])
+    average_rating = models.FloatField(default=0.0)  # ✅ New field
+    total_reviews = models.PositiveIntegerField(default=0)  # ✅ Optional helper
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name
 
@@ -95,6 +97,18 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+    
+# models.py
+class Offer(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='offers')
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
+    message = models.TextField(blank=True)
+    proposed_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Offer by {self.worker.user.first_name} for {self.job.title}"
+
 
 
 class Chat(models.Model):

@@ -50,12 +50,14 @@ class CustomerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class WorkerSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     class Meta:
         model = Worker
         fields = '__all__'
 
 class JobSerializer(serializers.ModelSerializer):
     customer_name = serializers.SerializerMethodField()
+    worker = WorkerSerializer(read_only=True)
     class Meta:
         model = Job
         fields = '__all__'
@@ -65,6 +67,27 @@ class JobSerializer(serializers.ModelSerializer):
         }
     def get_customer_name(self, obj):
         return f"{obj.customer.user.first_name} {obj.customer.user.last_name}"
+
+# serializers.py
+class OfferSerializer(serializers.ModelSerializer):
+    worker_name = serializers.SerializerMethodField()
+    job_title = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Offer
+        fields = '__all__'  # Keeps all fields including job, worker, message, amount, etc.
+        extra_kwargs = {
+            'worker': {'required': False},
+            'job': {'required': False},
+        }
+
+    def get_worker_name(self, obj):
+        return f"{obj.worker.user.first_name} {obj.worker.user.last_name}" if obj.worker and obj.worker.user else "Unnamed Worker"
+
+    def get_job_title(self, obj):
+        return obj.job.title if obj.job else "Untitled Job"
+
+
 
 class ChatSerializer(serializers.ModelSerializer):
     class Meta:
