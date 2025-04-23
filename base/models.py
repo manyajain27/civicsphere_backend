@@ -90,6 +90,8 @@ class Job(models.Model):
     description = models.TextField()
     category = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    job_latitude=models.DecimalField(max_digits=9,decimal_places=6,null=True,blank=True)
+    job_longitude=models.DecimalField(max_digits=9,decimal_places=6,null=True,blank=True)
     status = models.CharField(max_length=50, choices=[('open', 'Open'), ('assigned', 'Assigned'), ('completed', 'Completed')], default='open')
     image = models.ImageField(upload_to='job_images/', blank=True, null=True)
     time_preference = models.CharField(max_length=20, choices=[('Now', 'Now'), ('Later', 'Later')], default='Now')
